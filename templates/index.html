@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}A-Z Household Services - Home{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="text-center mb-5">
+            <h1 class="display-4">Welcome to A-Z Household Services</h1>
+            <p class="lead">Your one-stop solution for all household service needs</p>
+        </div>
+
+        <!-- Hero Banner -->
+        <div class="card bg-light mb-5">
+            <div class="card-body p-5 text-center">
+                <h2>Quality Home Services at Your Fingertips</h2>
+                <p class="lead">We connect you with skilled professionals for all your household needs</p>
+                {% if not current_user.is_authenticated %}
+                    <div class="mt-4">
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg me-2">Sign Up</a>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg">Login</a>
+                    </div>
+                {% elif current_user.role == 'customer' %}
+                    <div class="mt-4">
+                        <a href="{{ url_for('customer.services') }}" class="btn btn-primary btn-lg">Browse Services</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Services Overview -->
+        <h2 class="text-center mb-4">Our Services</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Plumbing</h5>
+                        <p class="card-text">Professional plumbing services for repairs, installations, and maintenance.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Electrical Work</h5>
+                        <p class="card-text">Qualified electricians for all your electrical needs and installations.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">AC Servicing</h5>
+                        <p class="card-text">Expert AC repair, installation, and maintenance services.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Painting</h5>
+                        <p class="card-text">Professional painting services for interior and exterior needs.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Cleaning</h5>
+                        <p class="card-text">Thorough cleaning services for all parts of your home.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Carpentry</h5>
+                        <p class="card-text">Skilled carpenters for furniture repair, installation, and custom work.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <h2 class="text-center mb-4">How It Works</h2>
+        <div class="row mb-5">
+            <div class="col-md-4 text-center">
+                <div class="p-3">
+                    <h4>1. Request a Service</h4>
+                    <p>Browse and select from our range of household services.</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="p-3">
+                    <h4>2. Get Connected</h4>
+                    <p>We'll match you with a verified professional in your area.</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="p-3">
+                    <h4>3. Service Completion</h4>
+                    <p>Get your service done and provide feedback on your experience.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

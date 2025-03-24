@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Account Pending Approval - A-Z Household Services{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h2 class="text-center mb-0">Account Pending Approval</h2>
+            </div>
+            <div class="card-body text-center py-5">
+                <div class="mb-4">
+                    <i class="fs-1">⏳</i>
+                </div>
+                <h3 class="mb-3">Your account is currently pending approval</h3>
+                <p class="lead">Our administrators are reviewing your profile information.</p>
+                <p>This process usually takes 1-2 business days. You'll be notified once your account is approved.</p>
+                <hr class="my-4">
+                <p>If you have any questions, please contact our support team at support@azhousehold.com</p>
+                <div class="mt-4">
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-primary">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

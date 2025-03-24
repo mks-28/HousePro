@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Close Service Request - A-Z Household Services{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2>Close Service Request</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info mb-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Service:</strong> {{ service_request.service.name }}</p>
+                            <p><strong>Request ID:</strong> {{ service_request.id }}</p>
+                            <p><strong>Date Requested:</strong> {{ service_request.date_of_request.strftime('%Y-%m-%d') }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Professional:</strong> {{ service_request.professional.name }}</p>
+                            <p><strong>Location:</strong> {{ service_request.location }}</p>
+                            <p><strong>PIN Code:</strong> {{ service_request.pin_code }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="POST" action="{{ url_for('customer.close_request', request_id=service_request.id) }}">
+                    <div class="mb-4">
+                        <label class="form-label">Rate the Service</label>
+                        <div class="rating-input mb-3">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="rating" id="rating1" value="1" required>
+                                <label class="form-check-label" for="rating1">1 ★</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="rating" id="rating2" value="2">
+                                <label class="form-check-label" for="rating2">2 ★</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="rating" id="rating3" value="3">
+                                <label class="form-check-label" for="rating3">3 ★</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="rating" id="rating4" value="4">
+                                <label class="form-check-label" for="rating4">4 ★</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="rating" id="rating5" value="5">
+                                <label class="form-check-label" for="rating5">5 ★</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="comment" class="form-label">Feedback/Comments</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="4" placeholder="Share your experience with the service"></textarea>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <p class="mb-0"><strong>Note:</strong> Closing this service request indicates that the service has been completed to your satisfaction. This action cannot be undone.</p>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('customer.dashboard') }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-success">Close Request & Submit Review</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+
+{% block title %}Professional Dashboard - A-Z Household Services{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Professional Dashboard</h1>
+        
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Welcome, {{ professional.name }}</h5>
+                        <p><strong>Service:</strong> {{ professional.service.name }}</p>
+                        <p><strong>Experience:</strong> {{ professional.experience }} years</p>
+                        <p><strong>Average Rating:</strong> 
+                            {% if avg_rating > 0 %}
+                                {{ "%.1f"|format(avg_rating) }}/5.0
+                                <div class="mt-1">
+                                    {% for i in range(5) %}
+                                        {% if i < avg_rating|int %}
+                                            <i class="text-warning">★</i>
+                                        {% elif i < avg_rating|int + 0.5 %}
+                                            <i class="text-warning">★</i>
+                                        {% else %}
+                                            <i class="text-secondary">☆</i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <span class="text-muted">No ratings yet</span>
+                            {% endif %}
+                        </p>
+                        <a href="{{ url_for('professional.profile') }}" class="btn btn-primary">View/Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Service Request Stats</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="p-3 bg-light rounded text-center">
+                                    <h2 class="display-6">{{ assigned_requests|length }}</h2>
+                                    <p class="mb-0">Active Assignments</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3 bg-light rounded text-center">
+                                    <h2 class="display-6">{{ available_requests|length }}</h2>
+                                    <p class="mb-0">Available Requests</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3 bg-light rounded text-center">
+                                    <h2 class="display-6">{{ completed_requests|length }}</h2>
+                                    <p class="mb-0">Completed Jobs</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Service Requests Tabs -->
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="requestTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="assigned-tab" data-bs-toggle="tab" data-bs-target="#assigned" type="button" role="tab">My Assignments</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="available-tab" data-bs-toggle="tab" data-bs-target="#available" type="button" role="tab">Available Requests</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">Service History</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="requestTabContent">
+                    <!-- Assigned Requests Tab -->
+                    <div class="tab-pane fade show active" id="assigned" role="tabpanel">
+                        {% if assigned_requests %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Customer</th>
+                                            <th>Location</th>
+                                            <th>Date Requested</th>
+                                            <th>Details</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for request in assigned_requests %}
+                                            <tr>
+                                                <td>{{ request.id }}</td>
+                                                <td>{{ request.customer.name }}</td>
+                                                <td>{{ request.location }}</td>
+                                                <td>{{ request.date_of_request.strftime('%Y-%m-%d') }}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detailsModal{{ request.id }}">View Details</button>
+                                                    
+                                                    <!-- Details Modal -->
+                                                    <div class="modal fade" id="detailsModal{{ request.id }}" tabindex="-1" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title">Request Details</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <p><strong>Service:</strong> {{ request.service.name }}</p>
+                                                                    <p><strong>Customer:</strong> {{ request.customer.name }}</p>
+                                                                    <p><strong>Phone:</strong> {{ request.customer.phone_number }}</p>
+                                                                    <p><strong>Location:</strong> {{ request.location }}</p>
+                                                                    <p><strong>PIN Code:</strong> {{ request.pin_code }}</p>
+                                                                    <p><strong>Date Requested:</strong> {{ request.date_of_request.strftime('%Y-%m-%d') }}</p>
+                                                                    {% if request.remarks %}
+                                                                        <p><strong>Customer Remarks:</strong></p>
+                                                                        <div class="alert alert-secondary">{{ request.remarks }}</div>
+                                                                    {% endif %}
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <form action="{{ url_for('professional.reject_request', request_id=request.id) }}" method="post" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to reject this request?')">Reject</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                You don't have any assigned service requests.
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Available Requests Tab -->
+                    <div class="tab-pane fade" id="available" role="tabpanel">
+                        {% if available_requests %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Customer</th>
+                                            <th>Location</th>
+                                            <th>Date Requested</th>
+                                            <th>Details</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for request in available_requests %}
+                                            <tr>
+                                                <td>{{ request.id }}</td>
+                                                <td>{{ request.customer.name }}</td>
+                                                <td>{{ request.location }}</td>
+                                                <td>{{ request.date_of_request.strftime('%Y-%m-%d') }}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#availableModal{{ request.id }}">View Details</button>
+                                                    
+                                                    <!-- Details Modal -->
+                                                    <div class="modal fade" id="availableModal{{ request.id }}" tabindex="-1" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title">Request Details</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <p><strong>Service:</strong> {{ request.service.name }}</p>
+                                                                    <p><strong>Customer:</strong> {{ request.customer.name }}</p>
+                                                                    <p><strong>Location:</strong> {{ request.location }}</p>
+                                                                    <p><strong>PIN Code:</strong> {{ request.pin_code }}</p>
+                                                                    <p><strong>Date Requested:</strong> {{ request.date_of_request.strftime('%Y-%m-%d') }}</p>
+                                                                    {% if request.remarks %}
+                                                                        <p><strong>Customer Remarks:</strong></p>
+                                                                        <div class="alert alert-secondary">{{ request.remarks }}</div>
+                                                                    {% endif %}
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                    <form action="{{ url_for('professional.accept_request', request_id=request.id) }}" method="post">
+                                                                        <button type="submit" class="btn btn-success">Accept Request</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <form action="{{ url_for('professional.accept_request', request_id=request.id) }}" method="post" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-success">Accept</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                There are no available service requests in your area for your service type.
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Service History Tab -->
+                    <div class="tab-pane fade" id="history" role="tabpanel">
+                        {% if completed_requests %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Customer</th>
+                                            <th>Service</th>
+                                            <th>Date Completed</th>
+                                            <th>Rating</th>
+                                            <th>Feedback</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for request in completed_requests %}
+                                            <tr>
+                                                <td>{{ request.id }}</td>
+                                                <td>{{ request.customer.name }}</td>
+                                                <td>{{ request.service.name }}</td>
+                                                <td>{{ request.date_of_completion.strftime('%Y-%m-%d') if request.date_of_completion else 'N/A' }}</td>
+                                                <td>
+                                                    {% if request.reviews %}
+                                                        {% set review = request.reviews[0] %}
+                                                        <div class="rating">
+                                                            {% for i in range(5) %}
+                                                                {% if i < review.rating %}
+                                                                    <i class="text-warning">★</i>
+                                                                {% else %}
+                                                                    <i class="text-secondary">☆</i>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        <span class="text-muted">No rating</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if request.reviews and request.reviews[0].comment %}
+                                                        <button type="button" class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#feedbackModal{{ request.id }}">View Feedback</button>
+                                                        
+                                                        <!-- Feedback Modal -->
+                                                        <div class="modal fade" id="feedbackModal{{ request.id }}" tabindex="-1" aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title">Customer Feedback</h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <p><strong>Customer:</strong> {{ request.customer.name }}</p>
+                                                                        <p><strong>Service:</strong> {{ request.service.name }}</p>
+                                                                        <p><strong>Rating:</strong> 
+                                                                            {% for i in range(5) %}
+                                                                                {% if i < request.reviews[0].rating %}
+                                                                                    <i class="text-warning">★</i>
+                                                                                {% else %}
+                                                                                    <i class="text-secondary">☆</i>
+                                                                                {% endif %}
+                                                                            {% endfor %}
+                                                                        </p>
+                                                                        <p><strong>Feedback:</strong></p>
+                                                                        <div class="alert alert-secondary">{{ request.reviews[0].comment }}</div>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% else %}
+                                                        <span class="text-muted">No feedback</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                You don't have any completed service requests.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

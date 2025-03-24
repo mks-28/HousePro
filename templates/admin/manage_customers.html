@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Customers - A-Z Household Services{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Manage Customers</h1>
+        
+        <!-- Filter Navigation -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <ul class="nav nav-pills">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin.users') }}">All Users</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" href="{{ url_for('admin.users', role='customer') }}">Customers</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin.users', role='professional') }}">Professionals</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <form action="{{ url_for('admin.users', role='customer') }}" method="get">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="search" placeholder="Search by name" value="{{ search }}">
+                                <button class="btn btn-outline-secondary" type="submit">Search</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if customers %}
+                                {% for customer in customers %}
+                                    <tr>
+                                        <td>{{ customer.id }}</td>
+                                        <td>{{ customer.name }}</td>
+                                        <td>{{ customer.user.email }}</td>
+                                        <td>{{ customer.phone_number }}</td>
+                                        <td>{{ customer.pin_code }}</td>
+                                        <td>
+                                            {% if customer.user.is_active %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Blocked</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#viewModal{{ customer.id }}">View</button>
+                                            
+                                            <form action="{{ url_for('admin.toggle_user_status', id=customer.user.id) }}" method="post" class="d-inline">
+                                                {% if customer.user.is_active %}
+                                                    <button type="submit" class="btn btn-sm btn-warning">Block</button>
+                                                {% else %}
+                                                    <button type="submit" class="btn btn-sm btn-success">Unblock</button>
+                                                {% endif %}
+                                            </form>
+                                            
+                                            <!-- Customer Details Modal -->
+                                            <div class="modal fade" id="viewModal{{ customer.id }}" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Customer Details</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p><strong>Name:</strong> {{ customer.name }}</p>
+                                                            <p><strong>Email:</strong> {{ customer.user.email }}</p>
+                                                            <p><strong>Phone:</strong> {{ customer.phone_number }}</p>
+                                                            <p><strong>Address:</strong> {{ customer.address }}</p>
+                                                            <p><strong>PIN Code:</strong> {{ customer.pin_code }}</p>
+                                                            <p><strong>Account Status:</strong> 
+                                                                {% if customer.user.is_active %}
+                                                                    <span class="badge bg-success">Active</span>
+                                                                {% else %}
+                                                                    <span class="badge bg-danger">Blocked</span>
+                                                                {% endif %}
+                                                            </p>
+                                                            <p><strong>Account Created:</strong> {{ customer.user.date_created.strftime('%Y-%m-%d') }}</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No customers found.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Services - A-Z Household Services{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Manage Services</h1>
+            <a href="{{ url_for('admin.add_service') }}" class="btn btn-success">Add New Service</a>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Time Required</th>
+                                <th>Date Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if services %}
+                                {% for service in services %}
+                                    <tr>
+                                        <td>{{ service.id }}</td>
+                                        <td>{{ service.name }}</td>
+                                        <td>${{ service.price }}</td>
+                                        <td>{{ service.time_required }}</td>
+                                        <td>{{ service.date_created.strftime('%Y-%m-%d') }}</td>
+                                        <td>
+                                            <a href="{{ url_for('admin.edit_service', id=service.id) }}" class="btn btn-sm btn-primary">Edit</a>
+                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ service.id }}">Delete</button>
+                                            
+                                            <!-- Delete Confirmation Modal -->
+                                            <div class="modal fade" id="deleteModal{{ service.id }}" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Confirm Delete</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>Are you sure you want to delete the service: <strong>{{ service.name }}</strong>?</p>
+                                                            <p class="text-danger">This action cannot be undone!</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <form action="{{ url_for('admin.delete_service', id=service.id) }}" method="post">
+                                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No services found.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

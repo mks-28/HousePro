@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - A-Z Household Services{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-center">Register</h2>
+            </div>
+            <div class="card-body">
+                <ul class="nav nav-tabs mb-3" id="registerTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="customer-tab" data-bs-toggle="tab" data-bs-target="#customer" type="button" role="tab">Customer</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="professional-tab" data-bs-toggle="tab" data-bs-target="#professional" type="button" role="tab">Service Professional</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="registerTabContent">
+                    <!-- Customer Registration Form -->
+                    <div class="tab-pane fade show active" id="customer" role="tabpanel">
+                        <form method="POST" action="{{ url_for('auth.register') }}">
+                            <input type="hidden" name="role" value="customer">
+                            
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username*</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email*</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password*</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Full Name*</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="phone_number" class="form-label">Phone Number*</label>
+                                <input type="text" class="form-control" id="phone_number" name="phone_number" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address*</label>
+                                <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="pin_code" class="form-label">PIN Code*</label>
+                                <input type="text" class="form-control" id="pin_code" name="pin_code" required>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Register as Customer</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Service Professional Registration Form -->
+                    <div class="tab-pane fade" id="professional" role="tabpanel">
+                        <form method="POST" action="{{ url_for('auth.register') }}">
+                            <input type="hidden" name="role" value="professional">
+                            
+                            <div class="mb-3">
+                                <label for="pro_username" class="form-label">Username*</label>
+                                <input type="text" class="form-control" id="pro_username" name="username" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="pro_email" class="form-label">Email*</label>
+                                <input type="email" class="form-control" id="pro_email" name="email" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="pro_password" class="form-label">Password*</label>
+                                <input type="password" class="form-control" id="pro_password" name="password" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="pro_name" class="form-label">Full Name*</label>
+                                <input type="text" class="form-control" id="pro_name" name="name" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="service_id" class="form-label">Service Type*</label>
+                                <select class="form-select" id="service_id" name="service_id" required>
+                                    <option value="" selected disabled>Select a service</option>
+                                    {% for service in services %}
+                                        <option value="{{ service.id }}">{{ service.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="experience" class="form-label">Experience (years)*</label>
+                                <input type="number" class="form-control" id="experience" name="experience" min="0" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description*</label>
+                                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="pro_phone_number" class="form-label">Phone Number*</label>
+                                <input type="text" class="form-control" id="pro_phone_number" name="phone_number" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="pro_address" class="form-label">Address*</label>
+                                <textarea class="form-control" id="pro_address" name="address" rows="2" required></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="pro_pin_code" class="form-label">PIN Code*</label>
+                                <input type="text" class="form-control" id="pro_pin_code" name="pin_code" required>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <small>Note: Your account will need to be verified by an administrator before you can accept service requests.</small>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Register as Professional</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Users - A-Z Household Services{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Manage Users</h1>
+        
+        <!-- Filter Navigation -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active' if request.args.get('role', 'all') == 'all' else '' }}" href="{{ url_for('admin.users') }}">All Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active' if request.args.get('role') == 'customer' else '' }}" href="{{ url_for('admin.users', role='customer') }}">Customers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active' if request.args.get('role') == 'professional' else '' }}" href="{{ url_for('admin.users', role='professional') }}">Professionals</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Date Created</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if users %}
+                                {% for user in users %}
+                                    <tr>
+                                        <td>{{ user.id }}</td>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>{{ user.role.capitalize() }}</td>
+                                        <td>{{ user.date_created.strftime('%Y-%m-%d') }}</td>
+                                        <td>
+                                            {% if user.is_active %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if user.role != 'admin' %}
+                                                <form action="{{ url_for('admin.toggle_user_status', id=user.id) }}" method="post" class="d-inline">
+                                                    {% if user.is_active %}
+                                                        <button type="submit" class="btn btn-sm btn-warning">Deactivate</button>
+                                                    {% else %}
+                                                        <button type="submit" class="btn btn-sm btn-success">Activate</button>
+                                                    {% endif %}
+                                                </form>
+                                            {% else %}
+                                                <span class="text-muted">Admin</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No users found.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

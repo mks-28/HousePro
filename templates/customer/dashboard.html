@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}Customer Dashboard - A-Z Household Services{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Customer Dashboard</h1>
+        
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Welcome, {{ customer.name }}</h5>
+                        <p class="card-text">Find and book services for your household needs.</p>
+                        <a href="{{ url_for('customer.services') }}" class="btn btn-primary">Browse Services</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">My Service Requests</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs mb-3" id="requestTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button" role="tab">Active Requests</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="closed-tab" data-bs-toggle="tab" data-bs-target="#closed" type="button" role="tab">Closed Requests</button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content" id="requestTabContent">
+                            <!-- Active Requests Tab -->
+                            <div class="tab-pane fade show active" id="active" role="tabpanel">
+                                {% set active_requests = service_requests|selectattr('service_status', 'ne', 'closed')|list %}
+                                {% if active_requests %}
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Service</th>
+                                                    <th>Date Requested</th>
+                                                    <th>Status</th>
+                                                    <th>Professional</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for request in active_requests %}
+                                                    <tr>
+                                                        <td>{{ request.id }}</td>
+                                                        <td>{{ request.service.name }}</td>
+                                                        <td>{{ request.date_of_request.strftime('%Y-%m-%d') }}</td>
+                                                        <td>
+                                                            {% if request.service_status == 'requested' %}
+                                                                <span class="badge bg-info">Requested</span>
+                                                            {% elif request.service_status == 'assigned' %}
+                                                                <span class="badge bg-success">Assigned</span>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-info">
+                                        You don't have any active service requests.
+                                        <a href="{{ url_for('customer.services') }}">Browse services</a> to create a new request.
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Closed Requests Tab -->
+                            <div class="tab-pane fade" id="closed" role="tabpanel">
+                                {% set closed_requests = service_requests|selectattr('service_status', 'eq', 'closed')|list %}
+                                {% if closed_requests %}
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Service</th>
+                                                    <th>Date Requested</th>
+                                                    <th>Date Completed</th>
+                                                    <th>Professional</th>
+                                                    <th>Review</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for request in closed_requests %}
+                                                    <tr>
+                                                        <td>{{ request.id }}</td>
+                                                        <td>{{ request.service.name }}</td>
+                                                        <td>{{ request.date_of_request.strftime('%Y-%m-%d') }}</td>
+                                                        <td>{{ request.date_of_completion.strftime('%Y-%m-%d') if request.date_of_completion else 'N/A' }}</td>
+                                                        <td>{{ request.professional.name if request.professional else 'N/A' }}</td>
+                                                        <td>
+                                                            {% if request.reviews %}
+                                                                {% set review = request.reviews[0] %}
+                                                                <div class="rating">
+                                                                    {% for i in range(5) %}
+                                                                        {% if i < review.rating %}
+                                                                            <i class="text-warning">★</i>
+                                                                        {% else %}
+                                                                            <i class="text-secondary">☆</i>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </div>
+                                                            {% else %}
+                                                                <span class="text-muted">No review</span>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-info">
+                                        You don't have any closed service requests yet.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+                                                        <td>
+                                                            {% if request.professional %}
+                                                                {{ request.professional.name }}
+                                                            {% else %}
+                                                                <span class="text-muted">Not assigned yet</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if request.service_status == 'requested' %}
+                                                                <a href="{{ url_for('customer.edit_request', request_id=request.id) }}" class="btn btn-sm btn-primary">Edit</a>
+                                                            {% elif request.service_status == 'assigned' %}
+                                                                <a href="{{ url_for('customer.close_request', request_id=request.id) }}" class="btn btn-sm btn-success">Close</a>
+                                                            {% endif %}
+                                                        </td>
